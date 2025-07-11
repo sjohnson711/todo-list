@@ -1,12 +1,20 @@
-# React + Vite
+App Name = ToDo-List
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Install Instructions - 
+1. Stage all the files with git: git add .
+2. Commit them to main: git commit -m "installed react"
+3. Push the changes to GitHub: git push
+4. Create and check out a new branch for week 1's assignment before         continuing: git checkout -b week-01-setup
+5. Publish the branch to github: git push origin week-01-setup
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+[Clean up Template]
+6. Start the development server with the command: npm run dev
+7. Open a browser to the Local link listed in the CLI
+8. Delete the contents of App.css but keep the file.
+9. Delete the contents of index.css but keep the file.
+10. Clean up App's code:
+    - Remove all imports except for App.css
+    - Delete the line containing const [count, setCount] = useState(0)
+    - Remove everything from the return statement.
+    - In the now empty return statement, add a div containing an h1 for the title for the app
