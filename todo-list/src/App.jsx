@@ -11,11 +11,12 @@ function App() {
     import.meta.env.VITE_TABLE_NAME
   }`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchTodos = async () => {
-      console.log("fetched todos function is called");
       setIsLoading(true);
+
       const options = {
         method: "GET",
         headers: {
@@ -23,18 +24,20 @@ function App() {
         },
       };
       try {
-        console.log(url);
         const resp = await fetch(url, options);
         if (!resp.ok) {
           throw new Error(resp.statusText);
         }
-        const response = await resp.json();
-        const fetchedTodos = response.records.map((record) => {
+        const data = await resp.json();
+        const fetchedTodos = data.records.map((record) => {
           const todo = {
             id: record.id,
             ...record.fields,
             isCompleted: record.fields.isCompleted || false,
           };
+          if (!fetchedTodos.isCompleted) {
+            fetchedTodos.isCompleted = false;
+          }
           return todo;
         });
         setTodoList(fetchedTodos);
@@ -44,7 +47,6 @@ function App() {
         setIsLoading(false);
       }
     };
-
     fetchTodos();
   }, []);
 
@@ -79,19 +81,28 @@ function App() {
     setTodoList(updatedTodos);
   }
 
+  const dismissError = () => {
+    setErrorMessage("");
+  };
+
   return (
     <div>
       <h1>Todo App</h1>
       <TodoForm onAddTodo={addTodo} />
-
       {errorMessage && <p className="error">{errorMessage}</p>}
-
       <TodoList
         todos={todoList}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
         isLoading={isLoading}
       />
+      {!errorMessage && (
+        <div>
+          <hr />
+          <p>{errorMessage}</p>
+          <button onClick={dismissError}>Dismiss</button>
+        </div>
+      )}
     </div>
   );
 }
