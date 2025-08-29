@@ -3,15 +3,23 @@ import TodoForm from "./features/TodoForm";
 import "./App.css";
 import { useState, useEffect } from "react";
 
+const encodeUrl = ({ sortField, sortDirection }) => {
+  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+  return encodeURI(`${url}?${sortQuery}`);
+};
+
+const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
+  //URL INCLUDING ID AND TABLE NAME
+  import.meta.env.VITE_TABLE_NAME
+}`;
+
 function App() {
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-
-  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
-    import.meta.env.VITE_TABLE_NAME
-  }`;
+  const [sortField, setSortField] = useState("createdTime");
+  const [sortDirection, setSortDirection] = useState("desc");
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   // -----------------------
@@ -22,13 +30,12 @@ function App() {
       setIsLoading(true);
 
       const options = {
-        //read the todos from airtable to window
-        method: "GET",
-        headers: { Authorization: token },
+        method: "GET", //read the todos from airtable to window
+        headers: { Authorization: token }, //AUTHRIZATION TOKEN
       };
 
       try {
-        const resp = await fetch(url, options);
+        const resp = await fetch(encodeUrl(sortDirection, sortField), options);
         if (!resp.ok) {
           throw new Error(resp.statusText);
         }
@@ -54,7 +61,7 @@ function App() {
     };
 
     fetchTodos();
-  }, []);
+  }, [sortDirection, sortField]);
 
   //Adding New todo
   const addTodo = async (newTodo) => {
@@ -81,7 +88,10 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(url, options);
+      const resp = await fetch(
+        encodeUrl({ sortDirection, sortField }),
+        options
+      );
       if (!resp.ok) throw new Error("Failed to save todo");
 
       const { records } = await resp.json();
@@ -127,7 +137,10 @@ function App() {
         todoList.map((todo) => (todo.id === editedTodo.id ? editedTodo : todo))
       );
 
-      const resp = await fetch(url, options);
+      const resp = await fetch(
+        encodeUrl({ sortDirection, sortField }),
+        options
+      );
       if (!resp.ok) throw new Error("Failed to update todo");
     } catch (err) {
       setErrorMessage(`${err.message}. Reverting todo...`);
@@ -173,7 +186,10 @@ function App() {
         todoList.map((todo) => (todo.id === id ? updatedTodo : todo))
       );
 
-      const resp = await fetch(url, options);
+      const resp = await fetch(
+        encodeUrl({ sortDirection, sortField }),
+        options
+      );
       if (!resp.ok) throw new Error("Failed to complete todo");
     } catch (err) {
       setErrorMessage(`${err.message}. Reverting todo...`);
