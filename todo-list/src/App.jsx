@@ -3,15 +3,15 @@ import TodoForm from "./features/TodoForm";
 import "./App.css";
 import { useState, useEffect } from "react";
 
-const encodeUrl = ({ sortField, sortDirection }) => {
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${url}?${sortQuery}`);
-};
-
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   //URL INCLUDING ID AND TABLE NAME
   import.meta.env.VITE_TABLE_NAME
 }`;
+
+const encodeUrl = ({ sortField, sortDirection }) => {
+  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+  return encodeURI(`${url}?${sortQuery}`);
+};
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -35,7 +35,10 @@ function App() {
       };
 
       try {
-        const resp = await fetch(encodeUrl(sortDirection, sortField), options);
+        const resp = await fetch(
+          encodeUrl({ sortDirection, sortField }),
+          options
+        );
         if (!resp.ok) {
           throw new Error(resp.statusText);
         }
@@ -59,7 +62,6 @@ function App() {
         setIsLoading(false);
       }
     };
-
     fetchTodos();
   }, [sortDirection, sortField]);
 
