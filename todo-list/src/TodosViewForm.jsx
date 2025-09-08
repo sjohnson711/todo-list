@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useState, useEffect, debounce } from "react";
 const TodosViewForm = ({
   sortField,
   setSortField,
@@ -9,9 +9,17 @@ const TodosViewForm = ({
   setQueryString,
 }) => {
   const preventRefresh = (e) => e.preventDefault();
+  const [localQueryString, setLocalQueryString] = useState(queryString);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setQueryString(localQueryString);
+    }, 500);
+    return () => clearTimeout(debounce);
+  }, [localQueryString, setQueryString]);
 
   function handleQueryString() {
-    setQueryString("");
+    setLocalQueryString("");
   }
   return (
     <form onSubmit={preventRefresh}>
@@ -19,9 +27,9 @@ const TodosViewForm = ({
         <label>Search todos</label>
         <input
           type="text"
-          value={queryString}
+          value={localQueryString}
           onChange={(e) => {
-            setQueryString(e.target.value);
+            setLocalQueryString(e.target.value);
           }}
         />
         <button onClick={handleQueryString}>Clear</button>
