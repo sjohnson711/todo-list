@@ -3,6 +3,7 @@ import TodoForm from "./features/TodoForm";
 import "./App.css";
 import { useState, useEffect, useCallback } from "react";
 import TodosViewForm from "./TodosViewForm.jsx";
+import AppStyles from "./App.module.css";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   //URL INCLUDING ID AND TABLE NAME
@@ -221,7 +222,7 @@ function App() {
 
   return (
     <div>
-      <h1>Todo App</h1>
+      <h1 className={AppStyles.title}>Todo App</h1>
       <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
 
       <TodoList
