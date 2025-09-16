@@ -1,4 +1,5 @@
 import TodoListItem from "./TodoListItem";
+import styles from "./TodoList.module.css";
 
 function TodoList({ todos, onCompleteTodo, onUpdateTodo }) {
   const filteredTodoList = todos.filter((todo) => !todo.isCompleted);
@@ -7,7 +8,7 @@ function TodoList({ todos, onCompleteTodo, onUpdateTodo }) {
     return <p>Add Todo Above...</p>;
   }
   return (
-    <ul>
+    <ul className={styles.ul}>
       {filteredTodoList.map((todo) => (
         <TodoListItem
           key={todo.id}
