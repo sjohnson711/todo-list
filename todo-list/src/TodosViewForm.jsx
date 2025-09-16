@@ -1,5 +1,19 @@
 import React from "react";
 import { useState, useEffect, debounce } from "react";
+import styled from "styled-components";
+
+const Button = styled.button`
+  background-color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  margin-left: 2px;
+`;
+
+const Search = styled.label`
+  font-weight: bold;
+  padding: 10px;
+`;
+
 const TodosViewForm = ({
   sortField,
   setSortField,
@@ -24,7 +38,7 @@ const TodosViewForm = ({
   return (
     <form onSubmit={preventRefresh}>
       <div>
-        <label>Search todos</label>
+        <Search>Search todos</Search>
         <input
           type="text"
           value={localQueryString}
@@ -32,7 +46,7 @@ const TodosViewForm = ({
             setLocalQueryString(e.target.value);
           }}
         />
-        <button onClick={handleQueryString}>Clear</button>
+        <Button onClick={handleQueryString}>Clear</Button>
       </div>
       <div>
         <label htmlFor="sortField">Sort by: </label>

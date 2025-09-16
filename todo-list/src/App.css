@@ -10,16 +10,5 @@ html {
   justify-content: center;
   align-content: center;
   font-family: Arial, Helvetica, sans-serif;
-}
-
-button {
-  font-weight: 400px;
-  background-color: bisque;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: black;
-  color: bisque;
+  background-color: antiquewhite;
 }
