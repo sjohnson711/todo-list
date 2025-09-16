@@ -221,7 +221,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className={AppStyles.container}>
       <h1 className={AppStyles.title}>Todo App</h1>
       <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
 
