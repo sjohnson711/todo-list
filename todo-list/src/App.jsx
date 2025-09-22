@@ -9,6 +9,7 @@ const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   //URL INCLUDING ID AND TABLE NAME
   import.meta.env.VITE_TABLE_NAME
 }`;
+//Combining state for: todoList, isLoading, isSaving, errorMessage
 
 function App() {
   const [todoList, setTodoList] = useState([]);
