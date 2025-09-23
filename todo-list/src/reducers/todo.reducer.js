@@ -1,78 +1,106 @@
 const actions = {
-  //actions in useEffect that loads todos
   fetchTodos: "fetchTodos",
   loadTodos: "loadTodos",
-  //found in useEffect and addTodo to handle failed requests
   setLoadError: "setLoadError",
-  //actions found in addTodo
   startRequest: "startRequest",
   addTodo: "addTodo",
   endRequest: "endRequest",
-  //found in helper functions
   updateTodo: "updateTodo",
   completeTodo: "completeTodo",
-  //reverts todos when requests fail
   revertTodo: "revertTodo",
-  //action on Dismiss Error button
   clearError: "clearError",
 };
 
-const reducer = (state, action) => {
+export const reducer = (state, action) => {
   switch (action.type) {
     case actions.fetchTodos:
       return {
         ...state,
         isLoading: true,
       };
+
     case actions.loadTodos:
       return {
         ...state,
-        todoList: actions.records.map((record) => ({
+        todoList: action.records.map((record) => ({
           id: record.id,
-          task: record.fields.task,
-          completed: record.field.completed,
+          title: record.title,
+          isCompleted: record.isCompleted ?? false,
         })),
         isLoading: false,
       };
+
     case actions.setLoadError:
       return {
         ...state,
         errorMessage: action.error.message,
         isLoading: false,
       };
-    case actions.startRequest: //left off here
+
+    case actions.startRequest:
       return {
         ...state,
+        isSaving: true,
       };
-    case actions.addTodo:
+
+    case actions.addTodo: {
+      const savedTodo = {
+        id: action.records[0].id,
+        title: action.records[0].title,
+        isCompleted: action.records[0].isCompleted ?? false,
+      };
       return {
         ...state,
+        todoList: [...state.todoList, savedTodo],
+        isSaving: false,
       };
+    }
+
     case actions.endRequest:
       return {
         ...state,
-      };
-    case actions.updateTodo:
-      return {
-        ...state,
-      };
-    case actions.completeTodo:
-      return {
-        ...state,
+        isLoading: false,
+        isSaving: false,
       };
 
     case actions.revertTodo:
+    case actions.updateTodo: {
+      const updatedTodos = state.todoList.map((todo) =>
+        todo.id === action.editedTodo.id ? action.editedTodo : todo
+      );
+
+      const updatedState = {
+        ...state,
+        todoList: updatedTodos,
+      };
+
+      if (action.error) {
+        updatedState.errorMessage = action.error.message;
+      }
+
+      return updatedState;
+    }
+
+    case actions.completeTodo: {
+      const updatedTodos = state.todoList.map((todo) =>
+        todo.id === action.id
+          ? { ...todo, isCompleted: !todo.isCompleted }
+          : todo
+      );
       return {
         ...state,
+        todoList: updatedTodos,
       };
+    }
 
     case actions.clearError:
       return {
         ...state,
+        errorMessage: "",
       };
 
     default:
-      break;
+      return state;
   }
 };
 
