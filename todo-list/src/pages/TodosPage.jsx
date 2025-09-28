@@ -1,27 +1,27 @@
-import React from "react";
-import TodoList from "../features/TodoList";
 import TodoForm from "../features/TodoForm";
+import TodoList from "../features/TodoList";
 import TodosViewForm from "../features/TodosViewForm";
 
 export default function TodoPage({
   todos = [],
-  onAddTodo,
+  addTodo,
   sortField,
   setSortField,
   sortDirection,
   setSortDirection,
   queryString,
   setQueryString,
-  onCompleteTodo,
-  onUpdateTodo,
+  completeTodo, // match App.jsx
+  updateTodo, // match App.jsx
 }) {
   return (
     <div>
-      <TodoForm onAddTodo={onAddTodo} />
+      <TodoForm onAddTodo={addTodo} />
       <TodoList
         todos={todos}
-        onCompleteTodo={onCompleteTodo}
-        onUpdateTodo={onUpdateTodo}
+        onCompleteTodo={completeTodo}
+        onUpdateTodo={updateTodo}
+        onAddTodo={addTodo}
       />
       <TodosViewForm
         sortField={sortField}

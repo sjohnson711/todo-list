@@ -7,14 +7,7 @@ import {
   initialState as initialTodosState,
 } from "./reducers/todo.reducer";
 import Header from "./shared/Header";
-import {
-  useLocation,
-  BrowserRouter as Router,
-  Route,
-  Routes,
-} from "react-router-dom";
-
-//location
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   import.meta.env.VITE_TABLE_NAME
@@ -22,31 +15,16 @@ const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
 
 function App() {
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
   const [sortField, setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
-  const token = `Bearer ${import.meta.env.VITE_PAT}`;
   const [queryString, setQueryString] = useState("");
-  const location = useLocation();
-  useEffect(() => {
-    switch (location.pathname) {
-      case "/":
-        document.title = "Todo List";
-        break;
-      case "/about":
-        document.title = "About";
-        break;
-        document.title = "Not";
-        break;
-    }
-  }, [location]);
+  const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-    let searchQuery = "";
-    if (queryString) {
-      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-    }
+    let searchQuery = queryString
+      ? `&filterByFormula=SEARCH("${queryString}",+title)`
+      : "";
     return encodeURI(`${url}?${sortQuery}${searchQuery}`);
   }, [sortField, sortDirection, queryString]);
 
@@ -55,23 +33,18 @@ function App() {
     const fetchTodos = async () => {
       dispatch({ type: todoActions.fetchTodos });
 
-      const options = {
-        method: "GET",
-        headers: { Authorization: token },
-      };
+      const options = { method: "GET", headers: { Authorization: token } };
 
       try {
         const resp = await fetch(encodeUrl(), options);
         if (!resp.ok) throw new Error(resp.statusText);
 
         const { records } = await resp.json();
-
-        const fetchedTodos = records.map((record) => ({
-          id: record.id,
-          title: record.fields.title,
-          isCompleted: record.fields.isCompleted ?? false,
+        const fetchedTodos = records.map((r) => ({
+          id: r.id,
+          title: r.fields.title,
+          isCompleted: r.fields.isCompleted ?? false,
         }));
-
         dispatch({ type: todoActions.loadTodos, records: fetchedTodos });
       } catch (error) {
         dispatch({ type: todoActions.setLoadError, error });
@@ -84,19 +57,11 @@ function App() {
   // Add Todo
   const addTodo = async (newTodo) => {
     const payload = {
-      records: [
-        {
-          fields: { title: newTodo, isCompleted: false },
-        },
-      ],
+      records: [{ fields: { title: newTodo, isCompleted: false } }],
     };
-
     const options = {
       method: "POST",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: token, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     };
 
@@ -140,10 +105,7 @@ function App() {
 
     const options = {
       method: "PATCH",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: token, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     };
 
@@ -182,10 +144,7 @@ function App() {
 
     const options = {
       method: "PATCH",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: token, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     };
 
