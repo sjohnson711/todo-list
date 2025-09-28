@@ -1,8 +1,9 @@
-import TodoListItem from "./TodoListItem";
+import TodoListItem from "./TodoList/TodoListItem";
 import styles from "./TodoList.module.css";
 
 function TodoList({ todos, onCompleteTodo, onUpdateTodo }) {
   const filteredTodoList = todos.filter((todo) => !todo.isCompleted);
+  console.log(todos);
 
   if (todos.length === 0) {
     return <p>Add Todo Above...</p>;
