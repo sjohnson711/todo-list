@@ -1,14 +1,16 @@
-import TodoList from "./features/TodoList/TodoList.jsx";
-import TodoForm from "./features/TodoForm";
+import TodosPage from "./pages/TodosPage";
 import "./App.css";
 import { useState, useEffect, useCallback, useReducer } from "react";
-import TodosViewForm from "./TodosViewForm.jsx";
-import Styled from "./App.module.css";
 import {
   reducer as todosReducer,
   actions as todoActions,
   initialState as initialTodosState,
 } from "./reducers/todo.reducer";
+import Header from "./shared/Header";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import About from "./pages/About";
+import NotFound from "./pages/NotFound";
+import { useSearchParams } from "react-router";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   import.meta.env.VITE_TABLE_NAME
@@ -16,18 +18,16 @@ const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
 
 function App() {
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
   const [sortField, setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
-  const token = `Bearer ${import.meta.env.VITE_PAT}`;
   const [queryString, setQueryString] = useState("");
+  const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-    let searchQuery = "";
-    if (queryString) {
-      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-    }
+    let searchQuery = queryString
+      ? `&filterByFormula=SEARCH("${queryString}",+title)`
+      : "";
     return encodeURI(`${url}?${sortQuery}${searchQuery}`);
   }, [sortField, sortDirection, queryString]);
 
@@ -36,23 +36,18 @@ function App() {
     const fetchTodos = async () => {
       dispatch({ type: todoActions.fetchTodos });
 
-      const options = {
-        method: "GET",
-        headers: { Authorization: token },
-      };
+      const options = { method: "GET", headers: { Authorization: token } };
 
       try {
         const resp = await fetch(encodeUrl(), options);
         if (!resp.ok) throw new Error(resp.statusText);
 
         const { records } = await resp.json();
-
-        const fetchedTodos = records.map((record) => ({
-          id: record.id,
-          title: record.fields.title,
-          isCompleted: record.fields.isCompleted ?? false,
+        const fetchedTodos = records.map((r) => ({
+          id: r.id,
+          title: r.fields.title,
+          isCompleted: r.fields.isCompleted ?? false,
         }));
-
         dispatch({ type: todoActions.loadTodos, records: fetchedTodos });
       } catch (error) {
         dispatch({ type: todoActions.setLoadError, error });
@@ -65,19 +60,11 @@ function App() {
   // Add Todo
   const addTodo = async (newTodo) => {
     const payload = {
-      records: [
-        {
-          fields: { title: newTodo, isCompleted: false },
-        },
-      ],
+      records: [{ fields: { title: newTodo, isCompleted: false } }],
     };
-
     const options = {
       method: "POST",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: token, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     };
 
@@ -121,10 +108,7 @@ function App() {
 
     const options = {
       method: "PATCH",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: token, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     };
 
@@ -163,10 +147,7 @@ function App() {
 
     const options = {
       method: "PATCH",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: token, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     };
 
@@ -188,34 +169,31 @@ function App() {
   if (todoState.isLoading) return <p>Loading todos...</p>;
 
   return (
-    <div className={Styled.container}>
-      <h1 className={Styled.title}>Todo App</h1>
-      <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-
-      <TodoList
-        todos={todoState.todoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={todoState.isLoading}
-      />
-
-      <hr />
-      <TodosViewForm
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        sortField={sortField}
-        setSortField={setSortField}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
-
-      {todoState.errorMessage && (
-        <div>
-          <hr />
-          <p className="error">{todoState.errorMessage}</p>
-          <button onClick={dismissError}>Dismiss</button>
-        </div>
-      )}
+    <div>
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodosPage
+              todos={todoState.todoList || []}
+              addTodo={addTodo}
+              completeTodo={completeTodo}
+              updateTodo={updateTodo}
+              todoState={todoState}
+              sortField={sortField}
+              setSortField={setSortField}
+              sortDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              queryString={queryString}
+              setQueryString={setQueryString}
+              dismissError={dismissError}
+            />
+          }
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }
