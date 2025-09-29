@@ -22,10 +22,6 @@ function App() {
   const [sortDirection, setSortDirection] = useState("desc");
   const [queryString, setQueryString] = useState("");
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const itemsPerPage = 15;
-  const currentPage = parseInt(searchParams.get("page") || "1", 10);
-  console.log(currentPage);
 
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
