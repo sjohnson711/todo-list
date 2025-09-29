@@ -8,6 +8,9 @@ import {
 } from "./reducers/todo.reducer";
 import Header from "./shared/Header";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import About from "./pages/About";
+import NotFound from "./pages/NotFound";
+import { useSearchParams } from "react-router";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   import.meta.env.VITE_TABLE_NAME
@@ -19,6 +22,10 @@ function App() {
   const [sortDirection, setSortDirection] = useState("desc");
   const [queryString, setQueryString] = useState("");
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const itemsPerPage = 15;
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  console.log(currentPage);
 
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
@@ -188,8 +195,8 @@ function App() {
             />
           }
         />
-        <Route path="/about" element={<h1>About</h1>} />
-        <Route path="*" element={<h1>Not Found</h1>} />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

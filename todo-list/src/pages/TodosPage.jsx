@@ -11,8 +11,8 @@ export default function TodoPage({
   setSortDirection,
   queryString,
   setQueryString,
-  completeTodo, // match App.jsx
-  updateTodo, // match App.jsx
+  completeTodo,
+  updateTodo,
 }) {
   return (
     <div>
